@@ -1,65 +1,73 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
+bool est1erGp(const string& verbe) { 
+    return verbe.substr(verbe.size() - 2) == "er" && verbe != "aller";
+}
 
+string toUpper(const string& s) {
+    string res = s;
+    transform(res.begin(), res.end(), res.begin(), ::toupper);
+    return res;
+}
 
-int main()
-{
-    // Obtenez plus de points en conjuguant correctement les verbes
+bool commenceParVoyelle(const string& s) {
+    return !s.empty() && string("aeiou").find(tolower(s[0])) != string::npos;
+}
+
+int main() {
     int n;
-    cin >> n;
+    cin >> n; cin.ignore();
 
     vector<string> verbes(n);
 
-    bool noVerb1ergp = true;
-
-    for(int i = 0; i < n; i++) 
-        cin >> verbes[i];
-
-    for(int i = 0; i < n; i++) {
-        if(verbes[i].back() == 'r' && verbes[i][verbes[i].size() - 2] == 'e') {
-            string verbe = verbes[i];
-            transform(verbe.begin(), verbe.end(), verbe.begin(), ::toupper);
-            cout << verbe << "\n";
-            if(verbes[i][verbes[i].size() - 4] == 'e' && verbes[i][verbes[i].size() - 3] == 'l') {
-                verbes[i].pop_back();
-                verbes[i].pop_back();
-                cout << "Je " << verbes[i] << "le" << "\n";
-                cout << "Tu " << verbes[i] << "les" << "\n";
-                cout << "Il " << verbes[i] << "le" << "\n";
-                cout << "Nous " << verbes[i] << "ons" << "\n";
-                cout << "Vous " << verbes[i] << "ez" << "\n";
-                cout << "Ils " << verbes[i] << "lent" << "\n";
-            } else if(verbes[i][verbes[i].size() - 3] == 'y') {
-                verbes[i].pop_back();
-                verbes[i].pop_back();
-                verbes[i].pop_back();
-                cout << "Je " << verbes[i] << "ie" << "\n";
-                cout << "Tu " << verbes[i] << "ies" << "\n";
-                cout << "Il " << verbes[i] << "ie" << "\n";
-                cout << "Nous " << verbes[i] << "yons" << "\n";
-                cout << "Vous " << verbes[i] << "yez" << "\n";
-                cout << "Ils " << verbes[i] << "ient" << "\n";
-
-            } else {
-                verbes[i].pop_back();
-                verbes[i].pop_back();
-                cout << "Je " << verbes[i] << "e" << "\n";
-                cout << "Tu " << verbes[i] << "es" << "\n";
-                cout << "Il " << verbes[i] << "e" << "\n";
-                if(verbes[i].back() == 'g')  cout << "Nous " << verbes[i] << "eons" << "\n";
-                else  cout << "Nous " << verbes[i] << "ons" << "\n";
-                cout << "Vous " << verbes[i] << "ez" << "\n";
-                cout << "Ils " << verbes[i] << "ent" << "\n";
-            }
-
-            noVerb1ergp = false;
-        } 
+    for (int i = 0; i < n; i++) {
+        getline(cin, verbes[i]);
     }
 
-    if(noVerb1ergp) cout << "NONE" << "\n";
+    bool no1erGp = true;
 
+    for (const string& verbe : verbes) {
+        if (!est1erGp(verbe)) continue;
+
+        bool estPronominal = verbe.substr(0, 3) == "se " || verbe.substr(0, 3) == "s\' ";
+
+        string radical;
+        
+        // apres "se " ou "s\' "
+        (estPronominal ? radical = verbe.substr(3) : radical = verbe); 
+
+        // Supprimer "er"
+        radical = radical.substr(0, radical.size() - 2);
+
+        // Gestion "el" => "ll", "et" => "tt"
+        string ajoutRadical = "";
+        string fin = radical.substr(max(0, (int)radical.size() - 2));
+        if(fin == "el") ajoutRadical = "l";
+        else if(fin == "et") ajoutRadical = "t";
+
+        // Pour affichage pronom reflechi
+        string pronom = (verbe.substr(0, 3) == "s\' ") ? "\' " : "e ";
+
+        cout << toUpper(verbe) << "\n";
+
+        // Conjugaisons
+        string sujetJe;
+        if(estPronominal) sujetJe = commenceParVoyelle(radical) ? "Je m' " : "Je m" + pronom;
+        else sujetJe = commenceParVoyelle(radical) ? "J'" : "Je ";
+        
+        cout << sujetJe << radical << (ajoutRadical.empty() ? "e" : ajoutRadical + "e") << "\n";
+
+        cout << (estPronominal ? "Tu t" + pronom : "Tu ") << radical << (ajoutRadical.empty() ? "es" : ajoutRadical + "es") << "\n";
+        cout << (estPronominal ? "Il s" + pronom : "Il ") << radical << (ajoutRadical.empty() ? "e" : ajoutRadical + "e") << "\n";
+        cout << (estPronominal ? "Nous nous " : "Nous ") << radical << (radical.back() == 'g' ? "eons" : "ons") << "\n";
+        cout << (estPronominal ? "Vous vous " : "Vous ") << radical << "ez" << "\n";
+        cout << (estPronominal ? "Ils s" + pronom : "Ils ") << radical << (ajoutRadical.empty() ? "ent" : ajoutRadical + "ent") << "\n";
+
+        no1erGp = false;
+    }
+
+    if (no1erGp) cout << "NONE\n";
 
     return 0;
 }
