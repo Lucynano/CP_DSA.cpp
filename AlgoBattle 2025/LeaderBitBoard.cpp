@@ -4,7 +4,7 @@ using namespace std;
 
 bool comp(const pair<string, int>& a, const pair<string, int>& b) {
     bool isBetter = false;
-    int countA = __builtin_popcount(a.second);
+    int countA = __builtin_popcount(a.second); // compte le nbr 1 dans le binaire de a.second (decimal)
     int countB = __builtin_popcount(b.second);
 
     if(countA != countB) return countA > countB;
@@ -16,7 +16,7 @@ int main() {
     int r;
     cin >> r; 
 
-    map<string, int> mapTotalScores;
+    map<string, int> mapTotalScores; // string: key, int: value
     string name, score;
 
     while(r--) {
@@ -28,9 +28,9 @@ int main() {
 
     }
 
-    vector<pair<string, int>> vTotalScores(mapTotalScores.begin(), mapTotalScores.end());
+    vector<pair<string, int>> vTotalScores(mapTotalScores.begin(), mapTotalScores.end()); // convertir map en vector pair
     
-    sort(vTotalScores.begin(), vTotalScores.end(), comp);
+    sort(vTotalScores.begin(), vTotalScores.end(), comp);  // trier DEC par nbr 1 de binaire et par lexicographie
 
     int i = 1;
 
